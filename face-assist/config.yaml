@@ -1,0 +1,31 @@
+name: "Face Assist"
+version: "1.0.0"
+slug: "face_assist"
+description: "AI-powered face detection and recognition add-on with user-friendly web interface"
+url: "https://github.com/yourusername/face-assist-addon"
+arch:
+  - aarch64
+startup: application
+boot: auto
+ingress: true
+panel_icon: mdi:face-recognition
+init: false
+map:
+  - share:rw
+ports:
+  8099/tcp: 8099
+options:
+  models_path: "/share/face-assist/models"
+  faces_path: "/share/face-assist/faces"
+  results_path: "/share/face-assist/results"
+  max_model_size: 500
+  supported_model_formats:
+    - ".onnx"
+    - ".tflite"
+schema:
+  models_path: str
+  faces_path: str
+  results_path: str
+  max_model_size: int
+  supported_model_formats:
+    - str
