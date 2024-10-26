@@ -31,4 +31,4 @@ cd /usr/src/app || bashio::exit.nok "Could not change to app directory"
 
 # Start the Flask application
 bashio::log.info "Starting Face Assist..."
-exec python3 app.py
+exec python3 -m app.main
