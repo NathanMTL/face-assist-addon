@@ -13,11 +13,14 @@ RUN \
         linux-headers \
         python3-dev \
         libffi-dev \
-        openssl-dev
+        openssl-dev \
+        wget \
+        tar \
+        curl
 
-# Install Hailo Runtime
-RUN wget https://github.com/hailo-ai/hailort/releases/download/latest/hailort-aarch64.tar.gz && \
-    tar -xzf hailort-aarch64.tar.gz && \
+# Install Hailo Runtime (using specific version)
+RUN wget https://hailo-hailort.s3.eu-west-2.amazonaws.com/HailoRT/v4.16.0/hailort-aarch64-4.16.0/hailort_4.16.0_aarch64.tar.gz && \
+    tar -xzf hailort_4.16.0_aarch64.tar.gz && \
     cd hailort && \
     ./install.sh && \
     cd .. && \
