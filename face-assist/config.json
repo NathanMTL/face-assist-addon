@@ -7,35 +7,52 @@
   "arch": ["aarch64"],
   "startup": "application",
   "boot": "auto",
+  "init": false,
   "ingress": true,
   "ingress_port": 8099,
   "panel_icon": "mdi:face-recognition",
-  "init": false,
-  "devices": ["/dev/hailo0:/dev/hailo0:rwm"],
-  "privileged": ["NET_ADMIN", "SYS_ADMIN"],
-  "map": ["share:rw"],
+  "panel_title": "Face Assist",
+  "devices": ["/dev/hailo0"],
+  "host_network": false,
+  "map": [
+    "share:rw",
+    "ssl"
+  ],
+  "environment": {
+    "LOG_FORMAT": "{LEVEL}: {MESSAGE}"
+  },
   "ports": {
     "8099/tcp": 8099
   },
   "ports_description": {
     "8099/tcp": "Web interface (Not required for Home Assistant Ingress)"
   },
+  "webui": "http://[HOST]:[PORT:8099]",
+  "hassio_api": true,
+  "hassio_role": "default",
+  "homeassistant_api": true,
   "options": {
     "models_path": "/share/face-assist/models",
     "faces_path": "/share/face-assist/faces",
     "results_path": "/share/face-assist/results",
     "max_model_size": 500,
-    "supported_model_formats": [".onnx", ".tflite"]
+    "supported_model_formats": [
+      ".onnx",
+      ".tflite"
+    ],
+    "log_level": "info"
   },
   "schema": {
     "models_path": "str",
     "faces_path": "str",
     "results_path": "str",
     "max_model_size": "int",
-    "supported_model_formats": ["str"]
+    "supported_model_formats": [
+      "str"
+    ],
+    "log_level": "list(trace|debug|info|notice|warning|error|fatal)"
   },
-  "apparmor": true,
-  "hassio_api": true,
-  "hassio_role": "default",
-  "webui": "http://[HOST]:[PORT:8099]"
+  "image": "ghcr.io/nathanmtl/face-assist-addon/{arch}",
+  "stage": "experimental",
+  "apparmor": true
 }
