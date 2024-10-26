@@ -6,6 +6,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Add required packages
 RUN \
+    apk update && \
     apk add --no-cache \
         python3 \
         py3-pip \
@@ -22,9 +23,9 @@ RUN \
         build-base \
         tar \
         bash \
-        libjpeg-turbo-dev \
+        jpeg-dev \
         zlib-dev \
-        dlib-dev
+        musl-dev
 
 # Copy root filesystem
 COPY rootfs /
