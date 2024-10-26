@@ -1,7 +1,10 @@
 ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM $BUILD_FROM
 
-# Install required packages
+# Set shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Add required packages
 RUN \
     apk add --no-cache \
         python3 \
@@ -18,37 +21,46 @@ RUN \
         cmake \
         build-base \
         tar \
-        bash
+        bash \
+        libjpeg-turbo-dev \
+        zlib-dev \
+        dlib-dev
+
+# Copy root filesystem
+COPY rootfs /
 
 # Create required directories
 RUN mkdir -p /opt/hailo \
     /share/face-assist/models \
     /share/face-assist/faces \
-    /share/face-assist/results
+    /share/face-assist/results \
+    /usr/src/app
 
-# Set working directory
 WORKDIR /usr/src/app
 
 # Copy application files
 COPY web /usr/src/app/web
 COPY requirements.txt .
-COPY rootfs /
 
 # Install Python packages
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Make scripts executable
 RUN chmod a+x /usr/src/app/web/scripts/* || true
-RUN chmod a+x /run.sh
+RUN chmod a+x /usr/bin/run.sh
 
 # Expose port
 EXPOSE 8099
 
-# Start the application
-CMD [ "/run.sh" ]
-
+# Labels
 LABEL \
     io.hass.name="Face Assist" \
     io.hass.description="AI-powered face detection and recognition add-on" \
     io.hass.type="addon" \
-    io.hass.version="1.0.0"
+    io.hass.version="1.0.0" \
+    io.hass.arch="aarch64" \
+    io.hass.docker.params="privileged" 
+
+# Start the application
+ENTRYPOINT ["/init"]
+CMD []
