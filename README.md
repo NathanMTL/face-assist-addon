@@ -28,7 +28,7 @@ AI-powered face detection and recognition add-on with user-friendly web interfac
 2. Click the menu (⋮) in the top right and select **Repositories**
 3. Add this repository URL:
    ```
-   https://github.com/[YOUR_USERNAME]/face-assist-addon
+   https://github.com/nathanmtl/face-assist-addon
    ```
 4. Click **Add**
 5. Find "Face Assist" in the add-on store and click **Install**
