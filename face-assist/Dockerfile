@@ -13,21 +13,7 @@ RUN \
         linux-headers \
         python3-dev \
         libffi-dev \
-        openssl-dev \
-        git \
-        cmake \
-        build-base
-
-# Clone and build HailoRT
-RUN git clone https://github.com/hailo-ai/hailort.git && \
-    cd hailort && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make -j$(nproc) && \
-    make install && \
-    cd ../.. && \
-    rm -rf hailort
+        openssl-dev
 
 # Copy root filesystem
 COPY rootfs /
