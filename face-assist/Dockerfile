@@ -18,9 +18,9 @@ RUN \
         tar \
         curl
 
-# Install Hailo Runtime (using specific version)
-RUN wget https://hailo-hailort.s3.eu-west-2.amazonaws.com/HailoRT/v4.16.0/hailort-aarch64-4.16.0/hailort_4.16.0_aarch64.tar.gz && \
-    tar -xzf hailort_4.16.0_aarch64.tar.gz && \
+# Install Hailo Runtime (using latest version 4.19.0)
+RUN wget https://hailo-hailort.s3.eu-west-2.amazonaws.com/HailoRT/v4.19.0/hailort-aarch64-4.19.0/hailort_4.19.0_aarch64.tar.gz && \
+    tar -xzf hailort_4.19.0_aarch64.tar.gz && \
     cd hailort && \
     ./install.sh && \
     cd .. && \
