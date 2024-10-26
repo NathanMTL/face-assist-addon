@@ -1,31 +1,24 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Set shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# Setup base system
-ARG DEBIAN_FRONTEND="noninteractive"
+# Install required packages
 RUN \
-    apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apk add --no-cache \
         python3 \
-        python3-pip \
-        python3-dev \
+        py3-pip \
+        nginx \
         gcc \
         g++ \
         make \
-        nginx \
-        wget \
-        unzip \
+        linux-headers \
+        python3-dev \
+        libffi-dev \
+        openssl-dev \
         git \
-        libgl1-mesa-dev \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        numactl \
-    && rm -rf /var/lib/apt/lists/*
+        cmake \
+        build-base \
+        tar \
+        bash
 
 # Create required directories
 RUN mkdir -p /opt/hailo \
