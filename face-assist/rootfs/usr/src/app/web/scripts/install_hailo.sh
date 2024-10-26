@@ -7,14 +7,27 @@ if [ ! -f "$HAILO_PACKAGE" ]; then
     exit 1
 fi
 
+# Create temporary directory
+mkdir -p /opt/hailo/temp
+cd /opt/hailo/temp
+
 # Extract and install Hailo package
-cd /opt/hailo
-tar -xzf hailort.tar.gz
-cd hailort
-./install.sh
+tar -xzf ../hailort.tar.gz
+
+# Run installation
+if [ -f "./install.sh" ]; then
+    chmod +x ./install.sh
+    ./install.sh
+elif [ -f "./hailort/install.sh" ]; then
+    chmod +x ./hailort/install.sh
+    ./hailort/install.sh
+else
+    echo "Could not find install.sh script"
+    exit 1
+fi
 
 # Clean up
 cd ..
-rm -rf hailort.tar.gz
+rm -rf temp hailort.tar.gz
 
 echo "Hailo installation completed"
