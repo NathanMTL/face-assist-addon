@@ -7,6 +7,7 @@ import numpy as np
 import face_recognition
 from PIL import Image
 import shutil
+import subprocess
 
 app = Flask(__name__, static_folder='web')
 
@@ -25,6 +26,7 @@ SUPPORTED_FORMATS = config['supported_model_formats']
 os.makedirs(MODELS_PATH, exist_ok=True)
 os.makedirs(FACES_PATH, exist_ok=True)
 os.makedirs(RESULTS_PATH, exist_ok=True)
+os.makedirs('/opt/hailo', exist_ok=True)
 
 # Known faces database
 known_faces = {}
@@ -148,6 +150,49 @@ def verify_face():
         'match': match_percentage >= 80,
         'confidence': match_percentage
     })
+
+@app.route('/api/hailo/upload', methods=['POST'])
+def upload_hailo():
+    """Handle Hailo runtime package upload"""
+    if 'package' not in request.files:
+        return jsonify({'error': 'No package file provided'}), 400
+    
+    package_file = request.files['package']
+    if not package_file.filename.endswith('.tar.gz'):
+        return jsonify({'error': 'Invalid package format'}), 400
+    
+    # Save the package
+    package_path = '/opt/hailo/hailort.tar.gz'
+    package_file.save(package_path)
+    
+    try:
+        # Run installation script
+        result = subprocess.run(['/usr/src/app/web/scripts/install_hailo.sh'], 
+                              capture_output=True, text=True, check=True)
+        return jsonify({
+            'message': 'Hailo runtime installed successfully',
+            'details': result.stdout
+        })
+    except subprocess.CalledProcessError as e:
+        return jsonify({
+            'error': 'Installation failed',
+            'details': e.stderr
+        }), 500
+
+@app.route('/api/hailo/status', methods=['GET'])
+def hailo_status():
+    """Check Hailo runtime status"""
+    try:
+        result = subprocess.run(['hailort-device-info'], 
+                              capture_output=True, text=True)
+        return jsonify({
+            'installed': True,
+            'details': result.stdout
+        })
+    except:
+        return jsonify({
+            'installed': False
+        })
 
 # Initialize face database on startup
 load_known_faces()
