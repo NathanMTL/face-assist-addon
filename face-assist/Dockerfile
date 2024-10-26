@@ -14,17 +14,20 @@ RUN \
         python3-dev \
         libffi-dev \
         openssl-dev \
-        wget \
-        tar \
-        curl
+        git \
+        cmake \
+        build-base
 
-# Install Hailo Runtime (using latest version 4.19.0)
-RUN wget https://hailo-hailort.s3.eu-west-2.amazonaws.com/HailoRT/v4.19.0/hailort-aarch64-4.19.0/hailort_4.19.0_aarch64.tar.gz && \
-    tar -xzf hailort_4.19.0_aarch64.tar.gz && \
+# Clone and build HailoRT
+RUN git clone https://github.com/hailo-ai/hailort.git && \
     cd hailort && \
-    ./install.sh && \
-    cd .. && \
-    rm -rf hailort*
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install && \
+    cd ../.. && \
+    rm -rf hailort
 
 # Copy root filesystem
 COPY rootfs /
