@@ -3,6 +3,7 @@ FROM ${BUILD_FROM} as builder
 
 # Install build dependencies
 RUN \
+    apk update && \
     apk add --no-cache \
         python3 \
         python3-dev \
@@ -18,26 +19,30 @@ RUN \
         build-base \
         jpeg-dev \
         zlib-dev \
-        musl-dev
+        musl-dev \
+        postgresql-dev \
+        libxml2-dev \
+        libxslt-dev \
+        lapack-dev \
+        gfortran \
+        blas-dev \
+        freetype-dev \
+        dlib-dev
 
-# Create python virtual environment
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Update pip and install wheel
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install wheel setuptools
 
-# Install Python packages in virtual environment
+# Install Python packages
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir wheel && \
-    pip3 install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 # Final stage
 FROM ${BUILD_FROM}
 
-# Copy virtual environment from builder
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
 # Install runtime dependencies
 RUN \
+    apk update && \
     apk add --no-cache \
         python3 \
         nginx \
@@ -47,7 +52,11 @@ RUN \
         libgomp \
         jpeg \
         libcrypto3 \
-        libssl3
+        libssl3 \
+        dlib-dev
+
+# Copy Python packages from builder
+COPY --from=builder /usr/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
 
 # Create required directories
 RUN mkdir -p \
