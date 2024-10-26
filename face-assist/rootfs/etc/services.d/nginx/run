@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start NGINX service
+# ==============================================================================
+
+# Create required folders
+mkdir -p /var/log/nginx
+mkdir -p /var/run/nginx
+
+# Output redirect logs
+ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log
+
+bashio::log.info "Starting NGINX..."
+
+# Disable HA Authentication if ingress is used
+if bashio::config.true 'ingress'; then
+    bashio::log.info "Disabling HA Authentication due to ingress..."
+    export DISABLE_HA_AUTHENTICATION=true
+fi
+
+exec nginx -g "daemon off;"
