@@ -1,45 +1,57 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# Install required packages
+# Set shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Setup base system
+ARG DEBIAN_FRONTEND="noninteractive"
 RUN \
-    apk add --no-cache \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
         python3 \
-        py3-pip \
-        nginx \
+        python3-pip \
+        python3-dev \
         gcc \
         g++ \
         make \
-        linux-headers \
-        python3-dev \
-        libffi-dev \
-        openssl-dev
+        nginx \
+        wget \
+        unzip \
+        git \
+        libgl1-mesa-dev \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+        numactl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy root filesystem
-COPY rootfs /
-
-# Set working directory
-WORKDIR /usr/share/face-assist
-
-# Copy application files
-COPY web /usr/share/face-assist/web
-COPY requirements.txt .
-
-# Install Python requirements
-RUN pip3 install -r requirements.txt
-
-# Create necessary directories
-RUN mkdir -p /share/face-assist/models \
+# Create required directories
+RUN mkdir -p /opt/hailo \
+    /share/face-assist/models \
     /share/face-assist/faces \
     /share/face-assist/results
 
-# Expose the port
-EXPOSE 8099
+# Set working directory
+WORKDIR /usr/src/app
 
-# Copy and set up scripts
-COPY run.sh /
+# Copy application files
+COPY web /usr/src/app/web
+COPY requirements.txt .
+COPY rootfs /
+
+# Install Python packages
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Make scripts executable
+RUN chmod a+x /usr/src/app/web/scripts/* || true
 RUN chmod a+x /run.sh
 
+# Expose port
+EXPOSE 8099
+
+# Start the application
 CMD [ "/run.sh" ]
 
 LABEL \
